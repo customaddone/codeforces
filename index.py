@@ -17,7 +17,6 @@ def getList():
 def getArray(intn):
     return [int(input()) for i in range(intn)]
 
-sys.setrecursionlimit(1000000000)
 mod = 10 ** 9 + 7
 MOD = 998244353
 INF = float('inf')
@@ -30,33 +29,38 @@ dy = [0, 1, 0, -1]
 #############
 
 """
-# 奇数の長さの奇数で始まり奇数で終わる数列に分割する
-# 奇数個の数列にできるか
+denote: 示す
+約数の和がcになる値を出せ
+c <= 10,000,000 なので全種類出すのは調和級数でも無理そう
 
-# 偶数は抱き込む必要がある
-もちろんDP 長さ100か
-dp[i][j]: i - 1まで進んだ時にj個分割した
+で通る　それはそう
+tは小さいのでこれでなんとか
+
+素数は1 + 素数
+2で割れるなら 1 + 2 + 素数
+全ての
+約数の総和は(1 + 2 + 2^2) * (1 + 3 + 3^2) * ...みたいにやる
+cの素因数分解は間に合う
+それぞれの因数について(1 + n + n^2...)の形で表現できるか
+
+まず1を引いた数は素数ですか？　いいえ
+
 """
 
-N = getN()
-A = getList()
+lim = 10 ** 7 + 7
+l = [1] * lim
+for i in range(2, lim):
+    j = i
+    while j < lim:
+        l[j] += i
+        j += i
 
-dp = [set() for i in range(N + 1)]
-dp[0].add(0)
+ans = [-1] * lim
+for i in range(lim - 1, 0, -1):
+    if l[i] < lim:
+        ans[l[i]] = i
 
-for i in range(N):
-    if A[i] % 2 == 0:
-        continue
-    # 次に飛べるとこ
-    for j in range(i, N):
-        for o in list(dp[i]):
-            # 次に飛ぶとこが奇数かつ長さが奇数
-            if A[j] % 2 == 1 and (j - i) % 2 == 0:
-                dp[j + 1].add(o + 1)
-
-for o in list(dp[N]):
-    if o % 2 == 1:
-        print('Yes')
-        exit()
-
-print('No')
+T = getN()
+for _ in range(T):
+    c = getN()
+    print(ans[c])
