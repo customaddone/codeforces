@@ -29,38 +29,50 @@ dy = [0, 1, 0, -1]
 #############
 
 """
-denote: 示す
-約数の和がcになる値を出せ
-c <= 10,000,000 なので全種類出すのは調和級数でも無理そう
+Consider an infinite triangle made up of layers. 何艘かの三角形を考える
+(r, c): r is the number of the layer, and c is the number of the point in the layer
+two direct edges. only one of the edges is activated.
+It is guaranteed that all n points are distinct. n個の点は全て異なる
+It is guaranteed that there is always at least one way to traverse all n points.
+全ての点を横切る道が一つはできることが保証されます
 
-で通る　それはそう
-tは小さいのでこれでなんとか
+activateな辺をスイッチする
+進む
+全ての点を通るためのコスト
+上から順に点1から点2までのコストを求める
+もしr + cが奇数なら今ラインに乗っている
+(r + i, c + i)までフリーでいける
+左向き、右向き何回でいけるか
+(0, 0), (a, b)の場合は
+左にa - b回右にb回進む
 
-素数は1 + 素数
-2で割れるなら 1 + 2 + 素数
-全ての
-約数の総和は(1 + 2 + 2^2) * (1 + 3 + 3^2) * ...みたいにやる
-cの素因数分解は間に合う
-それぞれの因数について(1 + n + n^2...)の形で表現できるか
-
-まず1を引いた数は素数ですか？　いいえ
-
+まず左　次に右
+r + c = evenならdiff r - cのラインに乗っている
+これに乗りたい
+diff evenのラインから一つスイッチする時コスト1かかる
+近傍のラインを見つける
+見るのは左を何回か　だけでいい 同じdiffの時に限ってコストが右の分だけかかる
+あとはdiff // 2の差
 """
-
-lim = 10 ** 7 + 7
-l = [1] * lim
-for i in range(2, lim):
-    j = i
-    while j < lim:
-        l[j] += i
-        j += i
-
-ans = [-1] * lim
-for i in range(lim - 1, 0, -1):
-    if l[i] < lim:
-        ans[l[i]] = i
 
 T = getN()
 for _ in range(T):
-    c = getN()
-    print(ans[c])
+    N = getN()
+    R = [1] + getList()
+    C = [1] + getList()
+    P = [[r, c] for r, c in zip(R, C)]
+    P.sort()
+
+    ans = 0
+    for i in range(N):
+        diff1 = P[i][0] - P[i][1]
+        diff2 = P[i + 1][0] - P[i + 1][1]
+        # how many times do you select right edges
+        if diff1 == diff2 and diff1 % 2 == 0:
+            ans += (P[i + 1][1] - P[i][1])
+            continue
+        # if you are to go the same group, you don't pay for it.
+        g_a = diff1 // 2
+        g_b = diff2 // 2
+        ans += g_b - g_a
+    print(ans)
